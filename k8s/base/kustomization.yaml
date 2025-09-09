@@ -12,6 +12,8 @@ resources:
   - pvc.yaml
   - ingress.yaml
   - secret.yaml
+  - ssh-tcp-configmap.yaml
+  - ssh-nodeport-service.yaml
 
 commonLabels:
   app: rippal
