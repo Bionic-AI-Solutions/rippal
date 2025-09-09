@@ -19,7 +19,7 @@ spec:
       - name: docker-registry-secret
       containers:
       - name: rippal
-        image: docker4zerocool/rippal:latest
+        image: docker4zerocool/bionic-ai-solutions-rippal:latest
         command: ["/startup.sh"]
         ports:
         - containerPort: 22

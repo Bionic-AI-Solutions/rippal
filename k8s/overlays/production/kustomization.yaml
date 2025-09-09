@@ -16,5 +16,5 @@ commonLabels:
   environment: production
 
 images:
-  - name: docker4zerocool/rippal
+  - name: docker4zerocool/bionic-ai-solutions-rippal
     newTag: latest
