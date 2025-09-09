@@ -10,7 +10,7 @@ spec:
   ports:
   - port: 2223
     targetPort: 2223
-    nodePort: 30223
+    nodePort: 30224
     protocol: TCP
     name: ssh
   selector:
