@@ -1,0 +1,56 @@
+repos:
+  - repo: local
+    hooks:
+      - id: docker-build-test
+        name: Docker Build Test
+        entry: bash -c 'docker build -t dev-pynode-test --target development .'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+      - id: frontend-lint
+        name: Frontend Lint
+        entry: bash -c 'docker run --rm -v $(pwd):/workspace -w /workspace dev-pynode-test sh -c "cd frontend && npm run lint"'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+      - id: backend-lint
+        name: Backend Lint
+        entry: bash -c 'docker run --rm -v $(pwd):/workspace -w /workspace dev-pynode-test sh -c "cd backend && flake8 . && black --check . && isort --check-only ."'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+      - id: frontend-tests
+        name: Frontend Tests
+        entry: bash -c 'docker run --rm -v $(pwd):/workspace -w /workspace dev-pynode-test sh -c "cd frontend && npm run test:run"'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+      - id: backend-tests
+        name: Backend Tests
+        entry: bash -c 'docker run --rm -v $(pwd):/workspace -w /workspace dev-pynode-test sh -c "cd backend && python -m pytest tests/unit/ -v"'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-json
+      - id: check-toml
+      - id: check-xml
+      - id: debug-statements
+      - id: check-docstring-first

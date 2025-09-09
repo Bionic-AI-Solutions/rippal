@@ -1,0 +1,116 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  DOCKER_IMAGE: docker4zerocool/${{ github.repository_owner }}-${{ github.event.repository.name }}
+  DOCKER_TAG: ${{ github.sha }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        target: production
+        push: true
+        tags: |
+          ${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
+          ${{ env.DOCKER_IMAGE }}:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Update Kubernetes manifests
+      if: github.ref == 'refs/heads/main'
+      run: |
+        # This would typically update a separate k8s-manifests repo
+        # For now, we'll just log the image tag for ArgoCD to pick up
+        echo "Image built and pushed: ${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}"
+        echo "ArgoCD should automatically sync this new image tag"
+
+    - name: Configure ArgoCD Access
+      if: github.ref == 'refs/heads/main'
+      run: |
+        # Use external ArgoCD URL
+        echo "ARGOCD_SERVER=argocd.bionicaisolutions.com" >> $GITHUB_ENV
+        echo "ARGOCD_PORT=443" >> $GITHUB_ENV
+
+    - name: Install ArgoCD CLI
+      if: github.ref == 'refs/heads/main'
+      run: |
+        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+        rm argocd-linux-amd64
+
+    - name: Test ArgoCD Connection
+      if: github.ref == 'refs/heads/main'
+      run: |
+        # Test if ArgoCD server is reachable
+        echo "Testing connection to ArgoCD server: $ARGOCD_SERVER"
+        if ! curl -k -s --connect-timeout 10 https://$ARGOCD_SERVER/api/version > /dev/null; then
+          echo "Error: Cannot connect to ArgoCD server at $ARGOCD_SERVER"
+          echo "Please check if the server is accessible and the URL is correct"
+          exit 1
+        fi
+        echo "ArgoCD server is reachable"
+
+    - name: Login to ArgoCD and Sync Application
+      if: github.ref == 'refs/heads/main'
+      run: |
+        # Check if ArgoCD password is set
+        if [ -z "${{ secrets.ARGOCD_PASSWORD }}" ]; then
+          echo "Error: ARGOCD_PASSWORD secret is not set in GitHub repository"
+          echo "Please add the ArgoCD admin password as a repository secret"
+          echo "You can get the password by running: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d"
+          exit 1
+        fi
+        
+        # Login to ArgoCD using external URL
+        echo "Logging into ArgoCD at $ARGOCD_SERVER"
+        argocd login $ARGOCD_SERVER --username admin --password ${{ secrets.ARGOCD_PASSWORD }}
+        
+        # Get the application name from repository name
+        APP_NAME="${{ github.event.repository.name }}"
+        
+        # Check if application exists
+        if argocd app get $APP_NAME >/dev/null 2>&1; then
+          echo "Application $APP_NAME exists, syncing..."
+          argocd app sync $APP_NAME --force
+          
+          # Wait for sync to complete
+          argocd app wait $APP_NAME --health --timeout 300
+          
+          echo "ArgoCD sync completed successfully"
+        else
+          echo "Application $APP_NAME not found, creating..."
+          # Create the application if it doesn't exist
+          argocd app create $APP_NAME \
+            --repo https://github.com/${{ github.repository }}.git \
+            --path k8s/overlays/production \
+            --dest-server https://kubernetes.default.svc \
+            --dest-namespace $APP_NAME \
+            --sync-policy automated \
+            --auto-prune \
+            --self-heal
+          
+          echo "ArgoCD application created and synced"
+        fi

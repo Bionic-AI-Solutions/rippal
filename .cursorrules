@@ -1,0 +1,648 @@
+# Cursor Ruleset for Bionic-AI-Solutions Projects
+
+## Core Development Workflow
+
+You are an AI assistant helping with development projects for Bionic-AI-Solutions. Follow these system instructions for EVERY project to ensure consistency and proper deployment pipeline setup. Use all the MCP servers at your disposal. you have kubernetes - For kubernetes management, context7 - For information on various libraries and frameworks, and hf-mcp-server - For huggingface management. duck-duck-go for web search for information. github for github management, dockerhub for docker image management.
+
+## 1. Repository Management
+
+### Initial Setup
+- **ALWAYS** create a new repository under `https://github.com/orgs/Bionic-AI-Solutions`
+- Repository naming convention: Use kebab-case (e.g., `payment-processor`, `user-management-api`)
+- Initialize with README.md, .gitignore, and appropriate license
+- Set up branch protection rules for `main` branch
+
+### Repository Structure
+```
+project-root/
+├── .github/
+│   ├── workflows/
+│   │   └── ci-cd.yml
+│   └── ISSUE_TEMPLATE/
+├── docs/
+│   ├── feature/
+│   │   └── <feature-name>/
+│   │       ├── implementation-tracker.md
+│   │       ├── implementation-plan.md
+│   │       ├── technical-architecture.md
+│   │       ├── api-documentation.md
+│   │       └── usage-document.md
+│   └── README.md
+├── k8s/
+│   ├── base/
+│   └── overlays/
+├── docker/
+│   └── Dockerfile
+├── src/
+└── docker-compose.yml
+```
+
+## 2. Feature Development Workflow
+
+### When User Indicates New Functionality Needed:
+
+1. **Create Feature Branch**
+   ```bash
+   git checkout -b feature/<feature-name>
+   ```
+
+2. **Create Feature Documentation Structure**
+   - Create `docs/feature/<feature-name>/` directory
+   - Generate all 5 required documents:
+
+#### Implementation Tracker (`implementation-tracker.md`)
+```markdown
+# Feature: <Feature Name>
+## Status: [Planning/In Progress/Testing/Complete]
+## Priority: [High/Medium/Low]
+
+### Progress Checklist
+- [ ] Requirements gathering
+- [ ] Technical design
+- [ ] API design
+- [ ] Implementation
+- [ ] Testing
+- [ ] Documentation
+- [ ] Deployment
+
+### Timeline
+- Start Date: 
+- Target Completion: 
+- Actual Completion: 
+
+### Blockers/Issues
+- List any blockers or issues encountered
+```
+
+#### Implementation Plan (`implementation-plan.md`)
+```markdown
+# Implementation Plan: <Feature Name>
+
+## Overview
+Brief description of the feature and its purpose.
+
+## Requirements
+### Functional Requirements
+- List all functional requirements
+
+### Non-Functional Requirements
+- Performance requirements
+- Security requirements
+- Scalability requirements
+
+## Implementation Phases
+1. **Phase 1**: Description and deliverables
+2. **Phase 2**: Description and deliverables
+3. **Phase 3**: Description and deliverables
+
+## Dependencies
+- List any dependencies on other systems/features
+
+## Testing Strategy
+- Unit testing approach
+- Integration testing approach
+- End-to-end testing approach
+
+## Rollout Plan
+- Deployment strategy
+- Rollback plan
+- Monitoring and alerting
+```
+
+#### Technical Architecture (`technical-architecture.md`)
+```markdown
+# Technical Architecture: <Feature Name>
+
+## Architecture Overview
+High-level architecture diagram and description.
+
+## Components
+### Component 1
+- Purpose
+- Technologies used
+- Interfaces
+
+### Component 2
+- Purpose
+- Technologies used
+- Interfaces
+
+## Data Flow
+Description of how data flows through the system.
+
+## Database Design
+- Schema changes
+- Migration strategy
+
+## Security Considerations
+- Authentication/Authorization
+- Data protection
+- Network security
+
+## Performance Considerations
+- Scalability requirements
+- Caching strategy
+- Load balancing
+
+## Technology Stack
+- Backend technologies
+- Database technologies
+- External services
+```
+
+#### API Documentation (`api-documentation.md`)
+```markdown
+# API Documentation: <Feature Name>
+
+## Base URL
+`https://api.example.com/v1`
+
+## Authentication
+Description of authentication mechanism.
+
+## Endpoints
+
+### GET /endpoint
+**Description**: Brief description of what this endpoint does.
+
+**Parameters**:
+- `param1` (string, required): Description
+- `param2` (integer, optional): Description
+
+**Response**:
+```json
+{
+  "status": "success",
+  "data": {}
+}
+```
+
+**Error Responses**:
+- `400 Bad Request`: Invalid parameters
+- `401 Unauthorized`: Authentication required
+- `404 Not Found`: Resource not found
+
+## Rate Limiting
+Description of rate limiting policies.
+
+## SDKs and Examples
+Code examples in different languages.
+```
+
+#### Usage Document (`usage-document.md`)
+```markdown
+# Usage Guide: <Feature Name>
+
+## Prerequisites
+- List any prerequisites or setup required
+
+## Getting Started
+Step-by-step guide to start using the feature.
+
+## Configuration
+### Environment Variables
+- `ENV_VAR_1`: Description and example value
+- `ENV_VAR_2`: Description and example value
+
+### Configuration Files
+Details about configuration files and their structure.
+
+## Common Use Cases
+### Use Case 1
+Description and code examples.
+
+### Use Case 2
+Description and code examples.
+
+## Troubleshooting
+Common issues and their solutions.
+
+## FAQ
+Frequently asked questions and answers.
+
+## Support
+How to get help or report issues.
+```
+
+## 3. Containerization Requirements
+
+### Docker Setup
+- **ALWAYS** use Docker for development and deployment
+- Create `Dockerfile` in project root
+- Create `docker-compose.yml` for local development
+- Use multi-stage builds for production optimization
+
+### Standard .env.example Template
+```bash
+# =============================================================================
+# APPLICATION CONFIGURATION
+# =============================================================================
+NODE_ENV=development
+APP_NAME=PROJECT_NAME
+APP_VERSION=1.0.0
+APP_PORT=3000
+APP_HOST=0.0.0.0
+DEBUG=true
+
+# =============================================================================
+# DATABASE CONFIGURATION (PostgreSQL)
+# =============================================================================
+# Primary Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=PROJECT_NAME_db
+DB_USER=postgres
+DB_PASSWORD=postgres_password
+DB_SSL=false
+DB_POOL_MIN=2
+DB_POOL_MAX=10
+DB_CONNECTION_TIMEOUT=60000
+
+# Database URL (alternative format)
+DATABASE_URL=postgresql://postgres:postgres_password@localhost:5432/PROJECT_NAME_db
+
+# =============================================================================
+# REDIS CONFIGURATION
+# =============================================================================
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=redis_password
+REDIS_DB=0
+REDIS_URL=redis://:redis_password@localhost:6379/0
+
+# Redis Connection Pool
+REDIS_POOL_SIZE=10
+REDIS_CONNECT_TIMEOUT=10000
+REDIS_COMMAND_TIMEOUT=5000
+
+# Redis Cluster (if using cluster)
+REDIS_CLUSTER_ENABLED=false
+REDIS_CLUSTER_NODES=localhost:7000,localhost:7001,localhost:7002
+
+# =============================================================================
+# OPENAI API CONFIGURATION
+# =============================================================================
+OPENAI_API_KEY=sk-your-openai-api-key-here
+OPENAI_MODEL=gpt-4
+OPENAI_MAX_TOKENS=2000
+OPENAI_TEMPERATURE=0.7
+OPENAI_TOP_P=1.0
+OPENAI_FREQUENCY_PENALTY=0.0
+OPENAI_PRESENCE_PENALTY=0.0
+OPENAI_TIMEOUT=30000
+
+# OpenAI Organization (optional)
+OPENAI_ORGANIZATION=org-your-org-id
+
+# =============================================================================
+# MINIO (S3-Compatible Storage) CONFIGURATION
+# =============================================================================
+MINIO_ENDPOINT=localhost
+MINIO_PORT=9000
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=minioadmin123
+MINIO_USE_SSL=false
+MINIO_REGION=us-east-1
+
+# Default bucket configuration
+MINIO_BUCKET_NAME=PROJECT_NAME-storage
+MINIO_BUCKET_REGION=us-east-1
+
+# Minio Console (optional)
+MINIO_CONSOLE_PORT=9001
+
+# AWS S3 Alternative (if using AWS instead of Minio)
+AWS_ACCESS_KEY_ID=your-aws-access-key
+AWS_SECRET_ACCESS_KEY=your-aws-secret-key
+AWS_REGION=us-east-1
+AWS_S3_BUCKET=PROJECT_NAME-storage
+
+# =============================================================================
+# LOCAL AI API CONFIGURATION
+# =============================================================================
+# Local AI Server Configuration
+LOCAL_AI_BASE_URL=http://localhost:8080
+LOCAL_AI_API_KEY=your-local-ai-api-key
+LOCAL_AI_MODEL=local-model-name
+LOCAL_AI_TIMEOUT=60000
+
+# Local AI Model Configuration
+LOCAL_AI_MAX_TOKENS=2000
+LOCAL_AI_TEMPERATURE=0.7
+LOCAL_AI_TOP_P=0.9
+LOCAL_AI_TOP_K=40
+
+# Alternative Local AI Providers
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=llama2
+LM_STUDIO_BASE_URL=http://localhost:1234
+LM_STUDIO_MODEL=local-model
+
+# =============================================================================
+# AUTHENTICATION & SECURITY
+# =============================================================================
+JWT_SECRET=your-super-secret-jwt-key-min-32-chars
+JWT_EXPIRES_IN=7d
+JWT_REFRESH_EXPIRES_IN=30d
+
+# Encryption keys
+ENCRYPTION_KEY=your-32-char-encryption-key-here
+HASH_ROUNDS=12
+
+# CORS Configuration
+CORS_ORIGIN=http://localhost:3000,http://localhost:3001
+CORS_CREDENTIALS=true
+
+# =============================================================================
+# LOGGING & MONITORING
+# =============================================================================
+LOG_LEVEL=info
+LOG_FORMAT=json
+LOG_FILE_ENABLED=true
+LOG_FILE_PATH=./logs/app.log
+LOG_MAX_FILES=5
+LOG_MAX_SIZE=10m
+
+# Sentry (Error Tracking)
+SENTRY_DSN=your-sentry-dsn-here
+SENTRY_ENVIRONMENT=development
+
+# =============================================================================
+# EMAIL CONFIGURATION
+# =============================================================================
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+EMAIL_FROM=noreply@PROJECT_NAME.com
+
+# =============================================================================
+# RATE LIMITING
+# =============================================================================
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+RATE_LIMIT_SKIP_SUCCESSFUL_REQUESTS=false
+
+# =============================================================================
+# WEBSOCKET CONFIGURATION
+# =============================================================================
+WS_ENABLED=true
+WS_PORT=3001
+WS_CORS_ORIGIN=http://localhost:3000
+
+# =============================================================================
+# DEVELOPMENT CONFIGURATION
+# =============================================================================
+# Hot reload
+HOT_RELOAD=true
+
+# API Documentation
+API_DOCS_ENABLED=true
+API_DOCS_PATH=/docs
+
+# Testing
+TEST_DB_NAME=PROJECT_NAME_test_db
+TEST_REDIS_DB=1
+
+# =============================================================================
+# DEPLOYMENT CONFIGURATION
+# =============================================================================
+# Container Configuration
+CONTAINER_PORT=3000
+HEALTH_CHECK_ENDPOINT=/health
+READINESS_CHECK_ENDPOINT=/ready
+
+# Kubernetes
+K8S_NAMESPACE=default
+K8S_SERVICE_NAME=PROJECT_NAME-service
+
+# =============================================================================
+# FEATURE FLAGS
+# =============================================================================
+FEATURE_NEW_UI=false
+FEATURE_ANALYTICS=true
+FEATURE_BETA_FEATURES=false
+```
+
+## 4. Technology Stack Templates
+
+### When creating FastAPI projects:
+- Use Python 3.11+ with FastAPI framework
+- Include SQLAlchemy ORM with Alembic migrations
+- Set up Pydantic models for validation
+- Configure async PostgreSQL with connection pooling
+- Add Redis for caching and session management
+- Include OpenAI integration
+- Set up Minio for file storage
+- Configure Local AI API integration
+- Use pytest with async support for testing
+- Include security with JWT authentication
+- Add Bandit for security scanning
+- Use Black, Flake8, and isort for code quality
+
+### When creating Node.js projects:
+- Use Node.js 18+ with Express.js framework
+- Include PostgreSQL with pg library
+- Set up Redis integration
+- Add OpenAI SDK integration
+- Configure Minio client for file storage
+- Include Local AI API integration
+- Use Jest for testing with supertest
+- Add JWT authentication with bcryptjs
+- Include ESLint and Prettier for code quality
+- Add rate limiting and security middleware
+- Configure Winston for logging
+
+### When creating React projects:
+- Use React 18+ with modern hooks
+- Set up React Router for navigation
+- Include Material-UI or Tailwind for styling
+- Add React Query for API state management
+- Configure Axios for HTTP requests
+- Include error boundaries and loading states
+- Set up testing with React Testing Library
+- Add ESLint and Prettier for code quality
+- Configure Vite for fast development
+- Include PWA capabilities
+- Add Lighthouse CI for performance monitoring
+
+## 5. CI/CD Pipeline Requirements
+
+### GitHub Actions Setup
+- **ALWAYS** create `.github/workflows/ci-cd.yml`
+- Include comprehensive testing (unit, integration, security)
+- Add code quality checks (linting, formatting)
+- Implement security scanning (dependencies, vulnerabilities)
+- Build and push Docker images to Docker Hub
+- Update Kubernetes manifests in separate repo
+- Trigger ArgoCD sync for deployment
+
+### Required GitHub Secrets
+- `DOCKER_USERNAME`: Docker Hub username
+- `DOCKER_PASSWORD`: Docker Hub access token
+- `GITHUB_TOKEN`: GitHub personal access token
+- `SNYK_TOKEN`: Snyk security scanning token (optional)
+
+## 6. Kubernetes Deployment
+
+### K8s Manifest Structure
+```
+k8s/
+├── base/
+│   ├── kustomization.yaml
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   ├── configmap.yaml
+│   ├── secret.yaml
+│   └── ingress.yaml
+└── overlays/
+    ├── development/
+    ├── staging/
+    └── production/
+```
+
+### Standard Deployment Features
+- Health checks (liveness and readiness probes)
+- Resource limits and requests
+- Environment-specific configurations
+- Horizontal Pod Autoscaling (HPA)
+- Network policies for security
+- ConfigMaps for configuration
+- Secrets for sensitive data
+- Ingress for external access
+
+## 7. ArgoCD Integration
+
+### Deployment Strategy
+- Separate k8s-manifests repository for GitOps
+- ArgoCD applications for each project
+- Automated image tag updates via GitHub Actions
+- Environment-specific overlays (dev/staging/prod)
+- Automated rollback capabilities
+- Health status monitoring
+
+## 8. Project Bootstrap Templates
+
+### Available Stack Templates
+1. **bionic-fastapi-template**: Python FastAPI backend
+2. **bionic-nodejs-template**: Node.js Express backend  
+3. **bionic-react-template**: React frontend
+
+### Bootstrap Command
+```bash
+./bootstrap.sh <project-name> <stack> <description>
+```
+Available stacks: `fastapi`, `nodejs`, `react`
+
+### Template Features
+- Complete project structure
+- Docker and docker-compose configuration
+- CI/CD pipeline setup
+- Kubernetes manifests
+- Environment configuration
+- Testing framework
+- Code quality tools
+- Documentation templates
+
+## 9. Development Guidelines
+
+### Code Quality Standards
+- Always include comprehensive testing (>80% coverage)
+- Implement proper error handling and logging
+- Use TypeScript for JavaScript projects
+- Follow security best practices
+- Include API documentation (OpenAPI/Swagger)
+- Maintain CHANGELOG.md for releases
+- Use semantic versioning
+
+### Container Best Practices
+- Multi-stage Docker builds for optimization
+- Non-root user for security
+- Health checks in containers
+- Proper resource limits
+- Environment-based configuration
+- Secrets management via environment variables
+
+### Documentation Requirements
+- Comprehensive README.md with setup instructions
+- API documentation with examples
+- Feature documentation following template
+- Deployment and troubleshooting guides
+- Code comments for complex logic
+
+## 10. Project Checklist
+
+### Universal Requirements (All Projects)
+- [ ] Repository created under Bionic-AI-Solutions org
+- [ ] Appropriate stack template used
+- [ ] .env.example configured with all required services
+- [ ] Dockerfile optimized for chosen stack
+- [ ] docker-compose.yml with all dependencies
+- [ ] GitHub Actions CI/CD pipeline configured
+- [ ] Kubernetes manifests created
+- [ ] GitHub secrets configured
+- [ ] ArgoCD application setup
+- [ ] Health and readiness endpoints implemented
+- [ ] Security scanning integrated
+- [ ] Code quality tools configured
+- [ ] Testing framework with coverage
+- [ ] Documentation created
+- [ ] Monitoring and logging configured
+
+### Stack-Specific Additions
+
+#### FastAPI Projects
+- [ ] Python 3.11+ with FastAPI
+- [ ] SQLAlchemy ORM with Alembic
+- [ ] Pydantic models for validation
+- [ ] Async PostgreSQL connection pooling
+- [ ] pytest with async support
+- [ ] Bandit security scanning
+- [ ] Black, Flake8, isort code quality
+
+#### Node.js Projects  
+- [ ] Node.js 18+ with Express
+- [ ] PostgreSQL with pg library
+- [ ] Jest testing with supertest
+- [ ] ESLint and Prettier
+- [ ] npm audit security scanning
+- [ ] Winston logging
+- [ ] Rate limiting middleware
+
+#### React Projects
+- [ ] React 18+ with modern hooks
+- [ ] React Router navigation
+- [ ] Material-UI or Tailwind CSS
+- [ ] React Query for state management
+- [ ] React Testing Library
+- [ ] Vite for development
+- [ ] Lighthouse CI performance testing
+- [ ] PWA capabilities
+
+## 11. Usage Instructions
+
+### Starting a New Project
+1. Run bootstrap script with desired stack
+2. Clone the generated repository
+3. Copy .env.example to .env and configure
+4. Run `docker-compose up -d` for development
+5. Follow stack-specific README instructions
+
+### Adding New Features
+1. Create feature branch: `git checkout -b feature/<name>`
+2. Create feature documentation in `docs/feature/<name>/`
+3. Implement feature following architectural guidelines
+4. Add comprehensive tests
+5. Update documentation
+6. Create pull request for review
+
+### Deployment Process
+1. Push to main branch triggers CI/CD pipeline
+2. Tests run automatically
+3. Docker image builds and pushes to registry
+4. Kubernetes manifests update automatically
+5. ArgoCD syncs and deploys to cluster
+6. Monitor deployment status in ArgoCD UI
+
+This ruleset ensures consistency across all Bionic-AI-Solutions projects while providing flexibility for specific requirements and maintaining a robust deployment pipeline through ArgoCD and Kubernetes.

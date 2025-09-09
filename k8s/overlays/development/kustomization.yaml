@@ -1,0 +1,47 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: rippal-development
+  annotations:
+    description: "Development environment configuration for rippal"
+
+namespace: rippal
+
+resources:
+  - ../../base
+
+patchesStrategicMerge:
+  - deployment-patch.yaml
+  - configmap-patch.yaml
+
+patchesJson6902:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: rippal
+    path: deployment-patch.json
+
+images:
+  - name: docker4zerocool/rippal
+    newTag: dev-latest
+
+replicas:
+  - name: rippal
+    count: 1
+  - name: rippal-frontend
+    count: 1
+
+commonLabels:
+  environment: development
+
+configMapGenerator:
+  - name: rippal-config
+    behavior: merge
+    literals:
+      - NODE_ENV=development
+      - DEBUG=true
+      - LOG_LEVEL=debug
+      - SENTRY_ENVIRONMENT=development
+

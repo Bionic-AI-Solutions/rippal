@@ -1,0 +1,14 @@
+# Act configuration file
+# Use specific Docker image for GitHub Actions
+-P ubuntu-latest=catthehacker/ubuntu:act-latest
+-P ubuntu-20.04=catthehacker/ubuntu:act-20.04
+-P ubuntu-18.04=catthehacker/ubuntu:act-18.04
+
+# Set default platform
+--platform ubuntu-latest=catthehacker/ubuntu:act-latest
+
+# Enable verbose output for debugging
+--verbose
+
+# Use local Docker daemon
+--container-architecture linux/amd64

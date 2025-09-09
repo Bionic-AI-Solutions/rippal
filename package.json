@@ -1,0 +1,41 @@
+{
+  "name": "rippal",
+  "version": "1.0.0",
+  "description": "Dev-Template application with SSH and web access",
+  "main": "index.js",
+  "scripts": {
+    "dev": "echo 'Development environment ready. Use docker-compose up -d to start services.'",
+    "build": "echo 'Build completed'",
+    "start": "echo 'Starting development environment'",
+    "test": "echo 'No tests configured yet'",
+    "lint": "echo 'Linting not configured yet'",
+    "format": "echo 'Formatting not configured yet'",
+    "docker:build": "docker build -t rippal .",
+    "docker:run": "docker-compose up -d",
+    "docker:stop": "docker-compose down",
+    "k8s:deploy": "kubectl apply -k k8s/overlays/development",
+    "k8s:undeploy": "kubectl delete -k k8s/overlays/development"
+  },
+  "keywords": [
+    "development",
+    "template",
+    "nodejs",
+    "python",
+    "docker",
+    "kubernetes"
+  ],
+  "author": "Bionic-AI-Solutions",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bionic-AI-Solutions/rippal.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Bionic-AI-Solutions/rippal/issues"
+  },
+  "homepage": "https://github.com/Bionic-AI-Solutions/rippal#readme"
+}

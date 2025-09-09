@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rippal
+  namespace: rippal
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: rippal
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: ENVIRONMENT
+          value: "production"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
