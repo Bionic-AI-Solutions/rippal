@@ -62,8 +62,7 @@ RUN mkdir -p /var/run/sshd && \
 
 # Configure SSH
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
-    sed -i 's/#Port 22/Port 2223/' /etc/ssh/sshd_config
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
 
 # Generate SSH host keys
 RUN ssh-keygen -A
@@ -75,7 +74,7 @@ RUN echo '#!/bin/sh' > /startup.sh && \
     chmod +x /startup.sh
 
 # Expose SSH port
-EXPOSE 2223
+EXPOSE 22
 
 # Set startup command
 CMD ["/startup.sh", "tail", "-f", "/dev/null"]
@@ -103,8 +102,7 @@ RUN mkdir -p /var/run/sshd && \
 
 # Configure SSH
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
-    sed -i 's/#Port 22/Port 2223/' /etc/ssh/sshd_config
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
 
 # Generate SSH host keys
 RUN ssh-keygen -A
@@ -116,7 +114,7 @@ RUN echo '#!/bin/sh' > /startup.sh && \
     chmod +x /startup.sh
 
 # Expose ports
-EXPOSE 2223 80
+EXPOSE 22 80
 
 # Set startup command
 CMD ["/startup.sh", "tail", "-f", "/dev/null"]
@@ -158,8 +156,7 @@ RUN mkdir -p /var/run/sshd && \
 
 # Configure SSH
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
-    sed -i 's/#Port 22/Port 2223/' /etc/ssh/sshd_config
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
 
 # Generate SSH host keys
 RUN ssh-keygen -A
@@ -171,7 +168,7 @@ RUN echo '#!/bin/sh' > /startup.sh && \
     chmod +x /startup.sh
 
 # Expose ports
-EXPOSE 2223 3000 8000
+EXPOSE 22 3000 8000
 
 # Set startup command
 CMD ["/startup.sh"]

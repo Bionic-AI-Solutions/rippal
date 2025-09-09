@@ -8,8 +8,8 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - port: 2223
-    targetPort: 2223
+  - port: 22
+    targetPort: 22
     nodePort: 30224
     protocol: TCP
     name: ssh

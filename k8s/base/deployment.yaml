@@ -22,7 +22,7 @@ spec:
         image: docker4zerocool/bionic-ai-solutions-rippal:latest
         command: ["/startup.sh"]
         ports:
-        - containerPort: 2223
+        - containerPort: 22
           name: ssh
         - containerPort: 3000
           name: frontend
@@ -42,14 +42,14 @@ spec:
             cpu: "500m"
         livenessProbe:
           tcpSocket:
-            port: 2223
+            port: 22
           initialDelaySeconds: 60
           periodSeconds: 30
           timeoutSeconds: 10
           failureThreshold: 3
         readinessProbe:
           tcpSocket:
-            port: 2223
+            port: 22
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
